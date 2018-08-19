@@ -1,10 +1,3 @@
-# Joao Victor Fagundes
-# Salomao Rodrigues Jacinto
-# INE5421 - Trabalho Prático I Junho 2018
-
-import json
-from collections import OrderedDict
-
 class Board():
 
     def __init__(self):

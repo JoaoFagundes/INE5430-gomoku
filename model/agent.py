@@ -1,43 +1,43 @@
 import numpy as np
+import copy
 from math import inf
 from random import randint
 
 def play(board):
-    score, x, y = compute_max(board, int(1))
+    score, x, y = minimax(board, 'M', -inf, inf, 1)
     board.insert_play(x, y, 'M')
 
-def compute_max(board, level):
-    best_score = -inf
-    x, y = 0, 0
-    i, j = best_available_play(board)
-    if i != None and j != None:
-        if (level < 7):
-            board.insert_play(i, j, 'M')
-            play_score = compute_min(board, level + 1)
-            if play_score > best_score:
-                best_score = play_score
-                x, y = i, j
-            board.set_value_position(i, j, ' ')
+def minimax(board, player, alpha, beta, level):
+    if level == 3 or board.check_win():
+        return int(randint(-50, 50)), None, None
+    
+    best_play = None
+    for play in every_possible_play(board):
+        if player == 'M':
+            board.set_value_position(play[0], play[1], 'M')
+            score = minimax(board, 'H', alpha, beta, level + 1)[0]
+            board.set_value_position(play[0], play[1], ' ')
+            
+            if score > alpha:
+                best_play = play
+                alpha = score
+            if alpha >= beta:
+                return alpha, best_play[0], best_play[1]
         else:
-            #chama heuristica ou utilidade
-            best_score = int(randint(-50, 50))
-    return best_score, x, y
+            board.set_value_position(play[0], play[1], 'H')
+            score = minimax(board, 'M', alpha, beta, level + 1)[0]
+            board.set_value_position(play[0], play[1], ' ')
 
-def compute_min(board, level):
-    best_score = inf
-    i, j = best_available_play(board)
-    if i != None and j != None:
-        if (level < 7):
-            board.insert_play(i, j, 'H')
-            play_score, x, y = compute_max(board, level + 1)
-            if play_score > best_score:
-                best_score = play_score
-            board.set_value_position(i, j, ' ')
-        else:
-            #chama heuristica ou utilidade
-            best_score = int(randint(-50, 50))
-
-    return best_score
+            if score < beta:
+                best_play = play
+                beta = score
+            if beta <= alpha:
+                return beta, best_play[0], best_play[1]
+        
+    if player == 'M':
+        return alpha, best_play[0], best_play[1]
+    else:
+        return beta, best_play[0], best_play[1]
 
 def best_available_play(board):
     board_size = board.get_size()
@@ -62,5 +62,18 @@ def best_available_play(board):
         else:
             return None, None
 
+def every_possible_play(board):
+    possible_plays = list()
+    while True:
+        i, j = best_available_play(board)
+        if i == None or j == None:
+            break
+        board.set_value_position(i, j, 'X')
+        possible_plays.append((i, j))
+    
+    for move in possible_plays:
+        board.set_value_position(move[0], move[1], ' ')
+
+    return possible_plays
 
 

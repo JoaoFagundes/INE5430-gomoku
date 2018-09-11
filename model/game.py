@@ -1,3 +1,4 @@
+from model.agent import play
 from model.board import Board
 from ui.userInterface import UserInterface
 
@@ -35,6 +36,7 @@ class Game():
             self._ui.message_place_occupied()
 
     def play_machine_turn(self):
+        play(self._board)
         print('Machine played')
 
     def change_player_turn(self):
